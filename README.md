@@ -13,9 +13,9 @@ You can use this little node script to automatically create json files from goog
 ## Using the script
 
 This script takes three arguments:
-1. `OUTPUT_PATH` (optional) - path to where your json file will be written. If nothing is specified, the script will publish a file called output.json to the HickoryDickoryGoogleDoc directory.
-2. `GDOC_PATH` (required) - the public path to your google doc spreadsheet. To obtain this, see directions above.
-3. `START_INDEX` (optional) - What row should the script consider to be the object keys. By default, this is 0.
+* `OUTPUT_PATH` (optional) - path to where your json file will be written. If nothing is specified, the script will publish a file called output.json to the HickoryDickoryGoogleDoc directory.
+* `GDOC_PATH` (required) - the public path to your google doc spreadsheet. To obtain this, see directions above.
+* `START_INDEX` (optional) - What row should the script consider to be the object keys. By default, this is 0.
 
 Sample Command:
 
