@@ -2,17 +2,18 @@ var fs          = require('fs');
 var csv         = require('csv-string');
 var request     = require('request');
 
-var earl        = '';
-var file        = 'locations.csv';
-var keyIndex    = 1;
+var earl        = process.env.GOOGLE_DOC_PATH;
+var filePath    = 'output.json';
+if(process.env.OUTPUT_PATH) filePath = process.env.OUTPUT_PATH;
 
+var keyIndex    = 1;
 var jsonReturn  = []
 var keys        = [];
 
-fs.readFile(file, 'utf-8', function(err, data){
-    var rows = csv.parse(data);
-    for(var i=0; i<rows.length; i++){
+request(earl, function(err, response, body){
+    var rows = csv.parse(body);
 
+    for(var i=0; i<rows.length; i++){
         var obj = {}
         for(var j=0; j<rows[i].length; j++){
             if(i == keyIndex) keys.push(rows[i][j]);
@@ -22,5 +23,8 @@ fs.readFile(file, 'utf-8', function(err, data){
         if(i > keyIndex) jsonReturn.push(obj);
     }
 
-    console.log(jsonReturn);
+    fs.writeFile(filePath, JSON.stringify(jsonReturn, null, 4), 'utf8', function(err){
+        if(err) console.log('err');
+        else console.log('Done writing file at ' + filePath);
+    });
 });
