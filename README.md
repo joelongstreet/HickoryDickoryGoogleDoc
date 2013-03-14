@@ -7,16 +7,21 @@ You can use this little node script to automatically create json files from goog
 * `File -> Publish to the web...`
 * Select "Automatically republish when changes are made"
 * `Click` Start Publishing
-* `Copy` the link within "Get a link to the published data", it's your GDOC_PATH
+* `Copy` the link within "Get a link to the published data", it's your GDOC_KEY
 
 
 ## Using the script
 
-This script takes three arguments:
-* `OUTPUT_PATH` (optional) - path to where your json file will be written. If nothing is specified, the script will publish a file called output.json to the HickoryDickoryGoogleDoc directory.
-* `GDOC_PATH` (required) - the public path to your google doc spreadsheet. To obtain this, see directions above.
+This script takes four arguments:
+* `GDOC_KEY` (required) - the public key to your google doc spreadsheet. To obtain this, see directions above.
+* `FILE_PATH` (optional) - path to where your json file will be written. If nothing is specified, the script will publish to the current directory.
+* `FILE_NAME` (optional) - the name of the file, by default this is data.json.
 * `START_INDEX` (optional) - What row should the script consider to be the object keys. By default, this is 0.
 
 Sample Command:
 
-`START_INDEX=1 OUTPUT_PATH='hi.json' GDOC_PATH='https://docs.google.com/spreadsheet/pub?key=0Aqt4TJ6rH8fTdDdOSXppMmhLQ20zc1FuRG9yRlNGUUE&output=csv' node index.js`
+`START_INDEX=1 FILE_NAME=goodmorning.json GDOC_KEY=0Aqt4TJ6rH8fTdDdOSXppMmhLQ20zc1FuRG9yRlNGUUE node index.js`
+
+or add something like this as an alias to your bash profile:
+
+`alias getGoogle='START_INDEX=1 GDOC_KEY=0Aqt4TJ6rH8fTdDdOSXppMmhLQ20zc1FuRG9yRlNGUUE node ~/Sites/HikcoryDickoryGoogleDoc index.js'`\
