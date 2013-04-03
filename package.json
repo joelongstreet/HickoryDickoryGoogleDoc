@@ -1,16 +1,29 @@
 {
   "name": "HickoryDickoryGoogleDoc",
-  "version": "1.0.0-11",
+  "description": "Create json blobs from google docs",
+  "author": "Joe Longstreet",
+  "keywords": [
+    "google",
+    "google docs",
+    "csv"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joelongstreet/HickoryDickoryGoogleDoc.git"
+  },
+  "preferGlobal": "true",
+  "version": "0.0.1",
+  "bin": {
+    "hickorydickory": "index.js"
+  },
   "engines": {
-    "node": "0.8.x",
+    "node": "0.10.x",
     "npm": "1.1.9"
   },
   "dependencies": {
     "request": "~2.14.0",
     "csv-string": "~1.0.3",
-    "argsparser": "0.0.6",
     "cli-color": "~0.2.2",
-    "optimist": "~0.3.5",
     "prompt": "~0.2.9"
   }
 }
