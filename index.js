@@ -71,9 +71,14 @@ var execute = function(options){
             for(var j=0; j<rows[i].length; j++){
                 if(i == options.index) keys.push(rows[i][j]);
                 else
+                    // Content in cell looks like an array
                     if(rows[i][j].indexOf('[') == 0) {
                         var content = rows[i][j].replace('[', '').replace(']', '').split(',');
-                        obj[keys[j]] = content;
+                        var arr     = [];
+                        for(var k=0; k<content.length; k++){
+                            arr.push(content[k].replace(' ', ''));
+                        }
+                        obj[keys[j]] = arr;
                     } else{
                         obj[keys[j]] = rows[i][j];
                     }
