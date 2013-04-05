@@ -23,9 +23,9 @@ var makePrompt = function(){
     prompt.start();
     prompt.get({
         properties : {
-            key         : { description : 'What\'s the Google Doc Key for the file you\'d like to use? See the README for more information on how to obtain this...'},
-            index       : { description : 'At what index (0 based) should the object keys be defined?'},
-            file        : { description : 'Where should I store the outputted file (example - /assets/data.json)?'}
+            key         : { description : 'Google Doc Key'},
+            index       : { description : 'Object Key Index'},
+            file        : { description : 'Output File'}
         }
     }, function(err, result){
         if(err) { printError(err); }
