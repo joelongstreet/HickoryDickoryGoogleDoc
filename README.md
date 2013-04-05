@@ -1,27 +1,29 @@
 # Hickory Dickory Google Doc
-
 You can use this little node script to automatically create json files from google spreadsheet docs. To get started, you'll have to have your google doc auto publishing csv documents.
 
-## Within the google doc interface
 
+## Within the google doc interface
 * `File -> Publish to the web...`
 * Select "Automatically republish when changes are made"
 * `Click` Start Publishing
 * `Copy` the link within "Get a link to the published data", it's your GDOC_KEY
 
 
+## Installation
+`npm install hickorydickory`
+
+
 ## Using the script
+Just run `hickorydickory`. The script will prompt you for configuration options and then write the .hickorydickory file to the current directory.
 
-This script takes four arguments:
-* `GDOC_KEY` (required) - the public key to your google doc spreadsheet. To obtain this, see directions above.
-* `FILE_PATH` (optional) - path to where your json file will be written. If nothing is specified, the script will publish to the current directory.
-* `FILE_NAME` (optional) - the name of the file, by default this is data.json.
-* `START_INDEX` (optional) - What row should the script consider to be the object keys. By default, this is 0.
 
-Sample Command:
+## Configuring your Google Doc
+Hickorydickory will recognize arrays in your google doc if you surround the cell contents with brackets. Example - `[thing1, thing2, thing3]`
 
-`START_INDEX=1 FILE_NAME=goodmorning.json GDOC_KEY=0Aqt4TJ6rH8fTdDdOSXppMmhLQ20zc1FuRG9yRlNGUUE node index.js`
+## Configuration Options
+The following config options are supported in the .hickorydickory file.
 
-or add something like this as an alias to your bash profile:
-
-`alias getGoogle='START_INDEX=1 GDOC_KEY=0Aqt4TJ6rH8fTdDdOSXppMmhLQ20zc1FuRG9yRlNGUUE node ~/Sites/HikcoryDickoryGoogleDoc index.js'`\
+* `key` - The google doc key example - `0Aqt4TJ6rH8fTdDdOSXppMmhLQ20zc1FuRG9yRlNGUUE`
+* `index` - The index to set as object keys example - `1`
+* `file` - The output file example - `assets/data/datasource.json`
+* `exports` - Specify this if you want the final object to be "exported", example - `locations`
