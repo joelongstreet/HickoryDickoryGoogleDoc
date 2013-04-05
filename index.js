@@ -26,7 +26,6 @@ var makePrompt = function(){
             key         : { description : 'What\'s the Google Doc Key for the file you\'d like to use? See the README for more information on how to obtain this...'},
             index       : { description : 'At what index (0 based) should the object keys be defined?'},
             file        : { description : 'Where should I store the outputted file (example - /assets/data.json)?'}
-            //exports     : { description : 'Surround result in module.exports (true of false)?'}
         }
     }, function(err, result){
         if(err) { printError(err); }
@@ -43,7 +42,7 @@ var makePrompt = function(){
 
 var readConfig = function(){
     fs.readFile('.hickorydickory', 'utf-8', function(err, data){
-        if(err) { makePrompt();  }
+        if(err || data.length == 0) { makePrompt();  }
         else    { execute(JSON.parse(data)); }
     });
 };
@@ -111,13 +110,24 @@ var parseDocument = function(options, csvBody, next){
 };
 
 var writeFile = function(options, data){
-    fs.writeFile(options.file, JSON.stringify(data.parsed, null, 4), 'utf8', function(err){
+
+    var fileContents = JSON.stringify(data.parsed, null, 4);
+    if(options.exports){
+        fileContents = 'exports.' + options.exports + ' = ' + fileContents;
+    }
+
+    fs.writeFile(options.file, fileContents, 'utf8', function(err){
         if(err) console.log('err');
         else console.log('\n\nDone writing json file, located at ' + options.file + '.\n\nObject keys are : \n' + JSON.stringify(data.keys, null, 4));
     });
 };
 
 var execute = function(options){
+
+    // Set defaults if config doesn't exist
+    if(!options.key)   { printError('There is no Google Doc Key specified in the configuration. Please see the .hickorydickory file to add one.'); }
+    if(!options.index) { options.index = 0; }
+    if(!options.file)  { options.file  = 'data.json'; };
 
     var earl = 'https://docs.google.com/spreadsheet/pub?key=' + options.key + '&output=csv';
 
@@ -126,12 +136,7 @@ var execute = function(options){
         if(err) { printError(err); }
         else    {
             parseDocument(options, body, function(data){
-                if(options.exports) {
-                    data.parsed = JSON.parse(options.exports + ' = ' + JSON.stringify(data.parsed, null, 4));
-                    writeFile(options, data);
-                } else{
-                    writeFile(options, data);
-                }
+                writeFile(options, data);
             });
         }
     });
