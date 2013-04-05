@@ -1,5 +1,5 @@
 var fs          = require('fs');
-var csv         = require('csv-string');
+var csv         = require('csv');
 var prompt      = require('prompt');
 var request     = require('request');
 var color       = require('cli-color');
@@ -34,7 +34,7 @@ var makePrompt = function(){
             writeConfig(result, function(){
                 console.log('Thanks, a new configuration file has been created at ' + process.cwd() + '/.hickorydickory');
                 console.log('If you need to make changes, that\'s where you\'ll do it');
-                // would be great to add to .gitignore here
+                // would be great to add .hickorydickory to .gitignore here
                 execute(result);
             });
         }
@@ -55,42 +55,85 @@ var writeConfig = function(data, next){
     });
 };
 
-var execute = function(options){
+var parseKeys = function(row){
+    var keys = [];
+    for(var i=0; i<row.length; i++){
+        keys.push(row[i]);
+    }
+    return keys;
+};
 
-    var earl        = 'https://docs.google.com/spreadsheet/pub?key=' + options.key + '&output=csv';
+var parseRow = function(keys, row){
+
+    var obj = {};
+
+    for(var i=0; i<row.length; i++){
+        if(i < keys.length) {
+            // If content in the cell looks like an array
+            if(row[i].indexOf('[') == 0) {
+                var content = row[i].replace('[', '').replace(']', '').split(',');
+                var arr     = [];
+                for(var k=0; k<content.length; k++){
+                    arr.push(content[k].replace(' ', ''));
+                }
+                obj[keys[i]] = arr;
+            } else {
+                obj[keys[i]] = row[i];
+            }
+        }
+    }
+
+    return obj;
+};
+
+var parseDocument = function(options, csvBody, next){
     var jsonReturn  = [];
     var keys        = [];
+    var iterator    = 0;
+
+    csv().from(csvBody).transform(function(row){
+        if(iterator == options.index){
+            keys = parseKeys(row);
+        } else if(iterator > options.index) {
+            jsonReturn.push(parseRow(keys, row));
+        }
+        iterator++;
+    }).on('end', function(){
+        if(next) {
+            next({
+                parsed  : jsonReturn,
+                keys    : keys
+            });
+        }
+    }).on('error', function(err){
+        printError(err);
+    });
+};
+
+var writeFile = function(options, data){
+    fs.writeFile(options.file, JSON.stringify(data.parsed, null, 4), 'utf8', function(err){
+        if(err) console.log('err');
+        else console.log('\n\nDone writing json file, located at ' + options.file + '.\n\nObject keys are : \n' + JSON.stringify(data.keys, null, 4));
+    });
+};
+
+var execute = function(options){
+
+    var earl = 'https://docs.google.com/spreadsheet/pub?key=' + options.key + '&output=csv';
 
     request.get(earl, function(err, response, body){
 
-        if(err){ printError(err); }
-
-        var rows = csv.parse(body);
-        for(var i=0; i<rows.length; i++){
-            var obj = {}
-            for(var j=0; j<rows[i].length; j++){
-                if(i == options.index) keys.push(rows[i][j]);
-                else
-                    // Content in cell looks like an array
-                    if(rows[i][j].indexOf('[') == 0) {
-                        var content = rows[i][j].replace('[', '').replace(']', '').split(',');
-                        var arr     = [];
-                        for(var k=0; k<content.length; k++){
-                            arr.push(content[k].replace(' ', ''));
-                        }
-                        obj[keys[j]] = arr;
-                    } else{
-                        obj[keys[j]] = rows[i][j];
-                    }
-            }
-
-            if(i > options.index) jsonReturn.push(obj);
+        if(err) { printError(err); }
+        else    {
+            parseDocument(options, body, function(data){
+                if(options.exports) {
+                    data.parsed = JSON.parse(options.exports + ' = ' + JSON.stringify(data.parsed, null, 4));
+                    writeFile(options, data);
+                } else{
+                    writeFile(options, data);
+                }
+            });
         }
-
-        fs.writeFile(options.file, JSON.stringify(jsonReturn, null, 4), 'utf8', function(err){
-            if(err) console.log('err');
-            else console.log('\n\nDone writing json file, located at ' + options.file + '.\n\nObject keys are : \n' + JSON.stringify(keys, null, 4));
-        });
     });
 };
 

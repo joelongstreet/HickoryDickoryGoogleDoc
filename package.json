@@ -22,8 +22,8 @@
   },
   "dependencies": {
     "request": "~2.14.0",
-    "csv-string": "~1.0.3",
     "cli-color": "~0.2.2",
-    "prompt": "~0.2.9"
+    "prompt": "~0.2.9",
+    "csv": "~0.2.9"
   }
 }
