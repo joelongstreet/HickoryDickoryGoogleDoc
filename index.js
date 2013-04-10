@@ -33,10 +33,14 @@ var makePrompt = function(){
         if(err) { printError(err); }
         else {
             writeConfig(result, function(){
-                console.log('Thanks, a new configuration file has been created at ' + process.cwd() + '/.hickorydickory');
+
+                fs.appendFile('.gitignore', '\n.hickorydickory', function(err){
+                    if(err) { console.log(color.red.bold(err)); }
+                });
+
+                console.log('\nThanks, a new configuration file has been created at ' + process.cwd() + '/.hickorydickory');
                 console.log('If you need to make changes, that\'s where you\'ll do it');
                 result.isCommand = true;
-                // would be great to add .hickorydickory to .gitignore here
                 execute(result, writeFile);
             });
         }
