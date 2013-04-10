@@ -69,7 +69,7 @@ var parseRow = function(keys, row){
     var obj = {};
 
     for(var i=0; i<row.length; i++){
-        if(i < keys.length) {
+        if(i < keys.length - 1) {
             // If content in the cell looks like an array
             if(row[i].indexOf('[') == 0) {
                 var content = row[i].replace('[', '').replace(']', '').split(',');
