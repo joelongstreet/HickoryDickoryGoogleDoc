@@ -35,8 +35,9 @@ var makePrompt = function(){
             writeConfig(result, function(){
                 console.log('Thanks, a new configuration file has been created at ' + process.cwd() + '/.hickorydickory');
                 console.log('If you need to make changes, that\'s where you\'ll do it');
+                result.isCommand = true;
                 // would be great to add .hickorydickory to .gitignore here
-                execute(result);
+                execute(result, writeFile);
             });
         }
     });
@@ -45,7 +46,11 @@ var makePrompt = function(){
 var readConfig = function(){
     fs.readFile('.hickorydickory', 'utf-8', function(err, data){
         if(err || data.length == 0) { makePrompt();  }
-        else    { execute(JSON.parse(data)); }
+        else {
+            var opts = JSON.parse(data);
+            opts.isCommand = true;
+            execute(opts, writeFile);
+        }
     });
 };
 
@@ -123,12 +128,12 @@ var writeFile = function(options, data){
     }
 
     fs.writeFile(options.file, fileContents, 'utf8', function(err){
-        if(err) console.log('err');
+        if(err) printError('err');
         else console.log('\n\nDone writing json file, located at ' + options.file + '.\n\nObject keys are : \n' + JSON.stringify(data.keys, null, 4));
     });
 };
 
-var execute = function(options){
+var execute = function(options, next){
 
     // Set defaults if config doesn't exist
     if(!options.key)   { printError('There is no Google Doc Key specified in the configuration. Please see the .hickorydickory file to add one.'); }
@@ -142,10 +147,13 @@ var execute = function(options){
         if(err) { printError(err); }
         else    {
             parseDocument(options, body, function(data){
-                writeFile(options, data);
+                if(options.isCommand) { next(options, data); }
+                else { next(data.parsed); }
             });
         }
     });
 };
 
-readConfig();
+if(require.main === module) { readConfig(); }
+
+exports.get = execute;
