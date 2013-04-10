@@ -75,7 +75,11 @@ var parseRow = function(keys, row){
                 var content = row[i].replace('[', '').replace(']', '').split(',');
                 var arr     = [];
                 for(var k=0; k<content.length; k++){
-                    arr.push(content[k].replace(' ', ''));
+                    if(content[k].indexOf(' ') == 0){
+                        arr.push(content[k].replace(' ', ''));
+                    } else{
+                        arr.push(content[k]);
+                    }
                 }
                 obj[keys[i]] = arr;
             } else {
